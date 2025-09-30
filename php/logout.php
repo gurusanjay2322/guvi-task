@@ -1,5 +1,4 @@
 <?php
-// php/logout.php
 require_once 'helpers.php';
 require_once 'redis.php';
 

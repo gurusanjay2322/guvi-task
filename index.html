@@ -3,25 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <title>Welcome</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  
 </head>
-<body class="container mt-5 text-center">
+<body>
 
-  <h1>Welcome to GUVI Internship Project</h1>
-  <p class="lead">A simple signup/login system with profile management</p>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand fw-semibold" href="index.html">GUVI Project</a>
+      <div class="ms-auto">
+        <a href="register.html" class="btn btn-outline-primary me-2">Register</a>
+        <a href="login.html" class="btn btn-primary">Login</a>
+      </div>
+    </div>
+  </nav>
 
-  <div class="mt-4">
-    <a href="register.html" class="btn btn-primary m-2">Register</a>
-    <a href="login.html" class="btn btn-success m-2">Login</a>
-  </div>
+  <section class="py-5 bg-light">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-12 col-lg-7 mx-auto text-center">
+          <h1 class="display-5 fw-bold">Welcome to GUVI Internship Project</h1>
+          <p class="lead text-muted mt-3">A minimal signup/login system with profile management.</p>
+          <div class="mt-4">
+            <a href="register.html" class="btn btn-primary btn-lg me-2">Get Started</a>
+            <a href="login.html" class="btn btn-outline-secondary btn-lg">I already have an account</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Check if user already logged in
     const token = localStorage.getItem("token");
     if (token) {
-      // If token exists → directly go to profile
       window.location.href = "profile.html";
     }
   </script>

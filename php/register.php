@@ -1,8 +1,7 @@
 <?php
-// php/register.php
 require_once 'helpers.php';
 require_once 'db.php';
-require_once 'mongo.php'; // needs composer autoload or include
+require_once 'mongo.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
 if (!$input) {
@@ -22,7 +21,46 @@ if (!$username || !$email || !$password) {
     exit;
 }
 
-// Check if user/email exists
+if (!preg_match('/^(?=.*[A-Za-z])[A-Za-z0-9_.]{3,30}$/', $username)) {
+    echo json_encode(['success'=>false, 'message'=>'Invalid username.']);
+    exit;
+}
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254) {
+    echo json_encode(['success'=>false, 'message'=>'Invalid email.']);
+    exit;
+}
+
+$pwdLen = strlen((string)$password);
+if ($pwdLen < 8 || $pwdLen > 128) {
+    echo json_encode(['success'=>false, 'message'=>'Invalid password length.']);
+    exit;
+}
+
+if (!is_null($age) && ($age < 1 || $age > 120)) {
+    echo json_encode(['success'=>false, 'message'=>'Invalid age.']);
+    exit;
+}
+
+if (!empty($dob)) {
+    $d = DateTime::createFromFormat('Y-m-d', $dob);
+    if (!$d || $d->format('Y-m-d') !== $dob) {
+        echo json_encode(['success'=>false, 'message'=>'Invalid date of birth.']);
+        exit;
+    }
+    $minDob = new DateTime('today');
+    $minDob->modify('-10 years');
+    if ($d > $minDob) {
+        echo json_encode(['success'=>false, 'message'=>'Invalid date of birth.']);
+        exit;
+    }
+}
+
+if (!empty($contact) && !preg_match('/^[0-9+()\-\s]{7,20}$/', $contact)) {
+    echo json_encode(['success'=>false, 'message'=>'Invalid contact number.']);
+    exit;
+}
+
 $stmt = $pdo->prepare('SELECT id FROM users WHERE username = :u OR email = :e LIMIT 1');
 $stmt->execute([':u' => $username, ':e' => $email]);
 if ($stmt->fetch()) {
@@ -30,7 +68,6 @@ if ($stmt->fetch()) {
     exit;
 }
 
-// Hash password
 $hash = password_hash($password, PASSWORD_DEFAULT);
 
 try {
@@ -46,7 +83,6 @@ try {
     ]);
     $userId = $pdo->lastInsertId();
 
-    // Mongo backup (non-blocking idea: push to a queue, but here we do directly)
     try {
         $col = $mongodb->selectCollection('users_backup');
         $col->insertOne([
@@ -59,8 +95,6 @@ try {
             'created_at' => new MongoDB\BSON\UTCDateTime()
         ]);
     } catch (Exception $e) {
-        // If mongo fails, we can still commit MySQL but log the issue.
-        // For the assignment keep it simple: continue.
     }
 
     $pdo->commit();

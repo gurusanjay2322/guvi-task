@@ -1,5 +1,4 @@
 <?php
-// php/redis.php
 $redisHost = getenv('REDIS_HOST') ?: '127.0.0.1';
 $redisPort = getenv('REDIS_PORT') ?: 6379;
 $redisTtl  = intval(getenv('REDIS_TTL') ?: 86400);
